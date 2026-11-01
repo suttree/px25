@@ -422,15 +422,15 @@ var main = (function($) { var _ = {
 					// Slide.
 
 						// Create elements.
-	 						s.$slide = $('<div class="slide"><div class="caption"></div><div class="image"></div></div>');
+							s.$slide = $('<div class="slide"><div class="caption"></div><img class="image" alt="" /></div>');
 
 	 					// Image.
  							s.$slideImage = s.$slide.children('.image');
 
- 							// Set background stuff.
+							// Set image position and alternative text.
 	 							s.$slideImage
-		 							.css('background-image', '')
-		 							.css('background-position', ($thumbnail.data('position') || 'center'));
+								.attr('alt', $thumbnail.children('img').attr('alt') || '')
+								.css('object-position', ($thumbnail.data('position') || 'center'));
 
 						// Caption.
 							s.$slideCaption = s.$slide.find('.caption');
@@ -442,12 +442,8 @@ var main = (function($) { var _ = {
 					// Preload?
 						if (_.settings.preload) {
 
-							// Force image to download.
-								var $img = $('<img src="' + s.url + '" />');
-
-							// Set slide's background image to it.
-								s.$slideImage
-									.css('background-image', 'url(' + s.url + ')');
+							// Load the visible image.
+								s.$slideImage.attr('src', s.url);
 
 							// Mark slide as loaded.
 								s.$slide.addClass('loaded');
@@ -562,13 +558,7 @@ var main = (function($) { var _ = {
 									newSlide.$slide.addClass('loading');
 
 								// Wait for it to load.
-									$('<img src="' + newSlide.url + '" />').on('load', function() {
-									//window.setTimeout(function() {
-
-										// Set background image.
-											newSlide.$slideImage
-												.css('background-image', 'url(' + newSlide.url + ')');
-
+									newSlide.$slideImage.one('load', function() {
 										// Mark as loaded.
 											newSlide.loaded = true;
 											newSlide.$slide.removeClass('loading');
@@ -581,8 +571,7 @@ var main = (function($) { var _ = {
 												_.locked = false;
 											}, 100);
 
-									//}, 1000);
-									});
+									}).attr('src', newSlide.url);
 
 							}, 100);
 
